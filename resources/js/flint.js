@@ -61,6 +61,11 @@ function renderHero(movie) {
   document.getElementById('heroTitle').textContent    = movie.title;
   document.getElementById('heroOverview').textContent = movie.overview;
 
+  const btnPlay     = document.getElementById('btnPlay');
+  const btnMoreInfo = document.getElementById('btnMoreInfo');
+  if (btnPlay)     btnPlay.onclick     = () => window.location.href = `/movie/${movie.id}`;
+  if (btnMoreInfo) btnMoreInfo.onclick = () => window.location.href = `/movie/${movie.id}`;
+
   const meta = document.getElementById('heroMeta');
   if (meta) {
     const dot = () => Object.assign(document.createElement('span'), { textContent: ' · ' });
@@ -111,8 +116,9 @@ function buildCard(movie) {
   infoEl.className = 'card-info';
   infoEl.append(titleEl, yearEl);
 
-  const card = document.createElement('div');
+  const card = document.createElement('a');
   card.className = 'movie-card';
+  card.href = `/movie/${movie.id}`;
   card.append(posterEl, infoEl);
   return card;
 }
@@ -295,8 +301,9 @@ async function doSearch(query) {
     }
 
     movies.forEach(m => {
-      const item = document.createElement('div');
+      const item = document.createElement('a');
       item.className = 'search-result-item';
+      item.href = `/movie/${m.id}`;
 
       const poster = posterUrl(m.poster_path, 'w92');
       if (poster) {

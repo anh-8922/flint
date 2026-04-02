@@ -53,6 +53,11 @@ class TmdbService
         return $this->get("/movie/{$id}", $params);
     }
 
+    public function movieDetail(int $id): array
+    {
+        return $this->movie($id, ['videos', 'credits', 'recommendations']);
+    }
+
     public function search(string $query, int $page = 1): array
     {
         return $this->get('/search/movie', ['query' => $query, 'page' => $page]);

@@ -13,6 +13,8 @@ Route::prefix('tmdb')->name('tmdb.')->group(function () {
     Route::get('/search',   [TmdbController::class, 'search'])->name('search');
 });
 
+Route::get('/movie/{id}', [TmdbController::class, 'show'])->name('movie.show');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

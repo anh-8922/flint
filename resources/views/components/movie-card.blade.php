@@ -18,7 +18,7 @@
   $bgStyle = $poster ? '' : 'background:linear-gradient(135deg,#1a1008,#111);';
 @endphp
 
-<div class="movie-card">
+<a class="movie-card" href="{{ route('movie.show', $movie['id']) }}" style="text-decoration:none;color:inherit;">
   <div class="card-poster {{ $poster ? '' : 'skeleton' }}" style="{{ $bgStyle }}">
     @if ($poster)
       <img src="{{ $poster }}" alt="{{ $movie['title'] }}" loading="lazy" />
@@ -33,4 +33,4 @@
     <div class="card-title">{{ $movie['title'] }}</div>
     <div class="card-year">{{ $year }}</div>
   </div>
-</div>
+</a>
