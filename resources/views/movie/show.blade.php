@@ -15,6 +15,12 @@
 
 <x-app-layout>
 
+  <x-breadcrumb :items="[
+    ['label' => 'Home',   'url' => route('home')],
+    ['label' => 'Movies', 'url' => route('home')],
+    ['label' => $movie['title'], 'url' => '#'],
+  ]" />
+
   {{-- ── Backdrop Hero ─────────────────────────────────────── --}}
   <section class="detail-hero" @if($backdrop) style="--backdrop:url('{{ $backdrop }}')" @endif>
     <div class="detail-hero-bg"></div>

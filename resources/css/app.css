@@ -641,6 +641,36 @@ footer {
   color: var(--spark);
 }
 
+/* ─── Breadcrumb ────────────────────────────────────────── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 5rem 3rem 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.breadcrumb-link {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb-link:hover { color: var(--spark); }
+
+.breadcrumb-sep { color: var(--border); }
+
+.breadcrumb-current {
+  color: var(--text);
+  opacity: 0.6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+}
+
 /* ─── Detail Hero ───────────────────────────────────────── */
 .detail-hero {
   position: relative;
@@ -990,6 +1020,7 @@ footer {
   .detail-hero-content { padding: 0 1.5rem 3rem; gap: 1.5rem; }
   .detail-player-wrap  { padding: 0 1.5rem; }
   .cast-track          { padding: 0.5rem 1.5rem 1rem; }
+  .breadcrumb          { padding: 4.5rem 1.5rem 0; }
 }
 
 @media (max-width: 480px) {
