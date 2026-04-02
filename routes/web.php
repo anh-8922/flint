@@ -1,10 +1,16 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TmdbController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home.index');
+})->name('home');
+
+Route::prefix('tmdb')->name('tmdb.')->group(function () {
+    Route::get('/trending', [TmdbController::class, 'trending'])->name('trending');
+    Route::get('/search',   [TmdbController::class, 'search'])->name('search');
 });
 
 Route::get('/dashboard', function () {

@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flint — Ignite Your Watch List</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Variables ─────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:        #080808;
+      --surface:   #111111;
+      --card:      #161616;
+      --border:    rgba(255,255,255,0.07);
+      --spark:     #E8A020;
+      --spark-dim: #B8781A;
+      --text:      #F0EDE8;
+      --muted:     #7A7570;
+      --nav-w:     280px;
+      --font-head: 'Bebas Neue', sans-serif;
+      --font-body: 'Outfit', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-weight: 400;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── Sidebar Nav ───────────────────────────────────────── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: var(--nav-w);
+      height: 100vh;
+      background: #0d0d0d;
+      border-right: 1px solid var(--border);
+      z-index: 200;
+      transform: translateX(calc(-1 * var(--nav-w)));
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      padding: 2rem;
+    }
+
+    .sidebar.open { transform: translateX(0); }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+    }
+
+    .sidebar-logo {
+      font-family: var(--font-head);
+      font-size: 2rem;
+      letter-spacing: 0.05em;
+      color: var(--spark);
+    }
+
+    .btn-close {
+      width: 36px; height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-close:hover { border-color: var(--spark); color: var(--spark); }
+
+    .sidebar-nav {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .sidebar-nav li a {
+      display: block;
+      font-family: var(--font-head);
+      font-size: 1.6rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0.5rem 0;
+      transition: color 0.2s, padding-left 0.2s;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-nav li a:hover { color: var(--text); padding-left: 0.5rem; }
+    .sidebar-nav li:last-child a { border-bottom: none; }
+    .sidebar-nav li a.active { color: var(--spark); }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── Overlay ───────────────────────────────────────────── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(2px);
+      z-index: 150;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s;
+    }
+
+    .overlay.show { opacity: 1; pointer-events: all; }
+
+    /* ─── Top Bar ───────────────────────────────────────────── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2rem;
+      background: linear-gradient(to bottom, rgba(8,8,8,0.95) 0%, transparent 100%);
+      transition: background 0.3s;
+    }
+
+    .topbar.scrolled {
+      background: rgba(8,8,8,0.98);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-hamburger {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 4px;
+    }
+
+    .btn-hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+
+    .btn-hamburger:hover span { background: var(--spark); }
+
+    .logo {
+      font-family: var(--font-head);
+      font-size: 1.8rem;
+      letter-spacing: 0.1em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .logo span { color: var(--spark); }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-search {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: color 0.2s;
+      padding: 4px;
+    }
+
+    .btn-search:hover { color: var(--spark); }
+
+    .btn-login {
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--spark);
+      border: none;
+      padding: 0.5rem 1.25rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-login:hover { background: var(--spark-dim); }
+
+    /* ─── Hero ──────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 100svh;
+      min-height: 560px;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center top;
+      background-color: #1a1a1a;
+      transform: scale(1.03);
+      transition: background-image 0.6s ease;
+    }
+
+    /* Skeleton shimmer on hero bg */
+    .hero-bg.loading {
+      background: linear-gradient(110deg, #1a1a1a 30%, #222 50%, #1a1a1a 70%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+
+    .hero-gradient {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top,   rgba(8,8,8,1) 0%,  rgba(8,8,8,0.7) 30%, transparent 60%),
+        linear-gradient(to right, rgba(8,8,8,0.8) 0%, transparent 60%);
+    }
+
+    /* Grain texture overlay */
+    .hero-grain {
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 0 3rem 4rem;
+      max-width: 600px;
+      animation: fadeUp 0.8s ease both;
+      animation-delay: 0.2s;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--spark);
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-badge::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: var(--spark);
+    }
+
+    .hero-title {
+      font-family: var(--font-head);
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .hero-meta {
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .hero-meta span { color: var(--spark); margin: 0 0.25rem; }
+
+    .hero-overview {
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: rgba(240,237,232,0.75);
+      margin-bottom: 1.75rem;
+      max-width: 460px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-play {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--spark);
+      border: none;
+      padding: 0.75rem 1.75rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-play:hover { background: #f5b432; transform: translateY(-1px); }
+
+    .btn-info {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text);
+      background: rgba(255,255,255,0.1);
+      border: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      backdrop-filter: blur(8px);
+    }
+
+    .btn-info:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.2); }
+
+    /* ─── Trending Section ──────────────────────────────────── */
+    .trending {
+      padding: 2.5rem 0 3rem;
+      position: relative;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-title {
+      font-family: var(--font-head);
+      font-size: 1.4rem;
+      letter-spacing: 0.12em;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 2px;
+      background: var(--spark);
+    }
+
+    .section-count {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    /* Carousel wrapper */
+    .carousel-wrap {
+      position: relative;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      overflow-y: visible;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      padding: 0.5rem 3rem 1.25rem;
+      scroll-behavior: smooth;
+    }
+
+    .carousel-track::-webkit-scrollbar { display: none; }
+
+    /* Chevron buttons */
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-60%);
+      z-index: 10;
+      width: 44px;
+      height: 80px;
+      background: rgba(8,8,8,0.85);
+      border: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    .carousel-btn:hover { background: var(--spark); color: var(--bg); border-color: var(--spark); }
+    .carousel-btn.prev { left: 0; }
+    .carousel-btn.next { right: 0; }
+
+    /* ─── Movie Card ────────────────────────────────────────── */
+    .movie-card {
+      flex: 0 0 200px;
+      scroll-snap-align: start;
+      cursor: pointer;
+      position: relative;
+      group: true;
+    }
+
+    .card-poster {
+      width: 100%;
+      aspect-ratio: 2/3;
+      background: var(--card);
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border);
+      transition: border-color 0.25s;
+    }
+
+    .movie-card:hover .card-poster {
+      border-color: var(--spark);
+    }
+
+    .card-poster img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease, filter 0.4s ease;
+      display: block;
+    }
+
+    .movie-card:hover .card-poster img {
+      transform: scale(1.06);
+      filter: brightness(0.7);
+    }
+
+    /* Skeleton */
+    .card-poster.skeleton {
+      animation: shimmer 1.5s infinite;
+      background: linear-gradient(110deg, #161616 30%, #1e1e1e 50%, #161616 70%);
+      background-size: 200% 100%;
+    }
+
+    .card-poster.skeleton img { display: none; }
+
+    /* Overlay on hover */
+    .card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(8,8,8,0.95) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1rem;
+    }
+
+    .movie-card:hover .card-overlay { opacity: 1; }
+
+    .card-overlay-title {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+
+    .card-overlay-meta {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .card-rating {
+      position: absolute;
+      top: 0.6rem;
+      right: 0.6rem;
+      background: rgba(8,8,8,0.85);
+      border: 1px solid var(--spark);
+      color: var(--spark);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.4rem;
+      letter-spacing: 0.05em;
+    }
+
+    .card-info {
+      padding: 0.6rem 0 0;
+    }
+
+    .card-title {
+      font-size: 0.82rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: 0.02em;
+    }
+
+    .card-year {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    /* ─── Carousel Dots ─────────────────────────────────────── */
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.4rem;
+      padding-top: 0.5rem;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      border: none;
+    }
+
+    .dot.active {
+      background: var(--spark);
+      transform: scale(1.3);
+    }
+
+    /* ─── Footer ────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: var(--font-head);
+      font-size: 1.2rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .footer-logo span { color: var(--spark); }
+
+    .footer-links {
+      display: flex;
+      gap: 0.25rem;
+      list-style: none;
+    }
+
+    .footer-links li a {
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+      padding: 0 0.6rem;
+      border-right: 1px solid var(--border);
+    }
+
+    .footer-links li:last-child a { border-right: none; }
+    .footer-links li a:hover { color: var(--spark); }
+
+    .footer-copy {
+      font-size: 0.7rem;
+      color: #3a3530;
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── Animations ────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position:  200% 0; }
+    }
+
+    /* ─── Search Bar ────────────────────────────────────────── */
+    .search-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 300;
+      background: rgba(8,8,8,0.98);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transform: translateY(-100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .search-bar.open { transform: translateY(0); }
+
+    .search-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      color: var(--text);
+      letter-spacing: 0.03em;
+    }
+
+    .search-bar input::placeholder { color: var(--muted); }
+
+    .search-bar label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--spark);
+    }
+
+    /* ─── Responsive ────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .topbar { padding: 1rem 1.25rem; }
+
+      .hero-content { padding: 0 1.5rem 3rem; }
+
+      .section-header { padding: 0 1.5rem; }
+
+      .carousel-track { padding: 0.5rem 1.5rem 1.25rem; }
+
+      .carousel-btn { display: none; }
+
+      .movie-card { flex: 0 0 150px; }
+
+      footer {
+        padding: 1.25rem 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .movie-card { flex: 0 0 130px; }
+      .btn-login { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Overlay ───────────────────────────────────── -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- ── Sidebar Nav ───────────────────────────────── -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="sidebar-header">
+      <span class="sidebar-logo">FL<span style="color:var(--text)">INT</span></span>
+      <button class="btn-close" id="btnClose" aria-label="Close menu">✕</button>
+    </div>
+    <ul class="sidebar-nav">
+      <li><a href="#" class="active">Home</a></li>
+      <li><a href="#">Categories</a></li>
+      <li><a href="#">News</a></li>
+      <li><a href="#">My List</a></li>
+      <li><a href="#">Login</a></li>
+    </ul>
+    <p class="sidebar-footer">© 2025 Flint · Built with TMDB</p>
+  </aside>
+
+  <!-- ── Search Bar ────────────────────────────────── -->
+  <div class="search-bar" id="searchBar">
+    <label>Search</label>
+    <input type="text" id="searchInput" placeholder="Search movies, shows..." autocomplete="off" />
+    <button class="btn-close" id="btnSearchClose" aria-label="Close search">✕</button>
+  </div>
+
+  <!-- ── Top Bar ────────────────────────────────────── -->
+  <header class="topbar" id="topbar">
+    <div class="topbar-left">
+      <button class="btn-hamburger" id="btnHamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <a href="#" class="logo">FL<span>I</span>NT</a>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-search" id="btnSearch" aria-label="Search" title="Search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+      <a href="#" class="btn-login">Sign In</a>
+    </div>
+  </header>
+
+  <!-- ── Hero ──────────────────────────────────────── -->
+  <section class="hero" id="hero">
+    <div class="hero-bg loading" id="heroBg"></div>
+    <div class="hero-grain"></div>
+    <div class="hero-gradient"></div>
+    <div class="hero-content" id="heroContent">
+      <p class="hero-badge" id="heroBadge">Trending in Movies</p>
+      <h1 class="hero-title" id="heroTitle">—</h1>
+      <p class="hero-meta" id="heroMeta">&nbsp;</p>
+      <p class="hero-overview" id="heroOverview">&nbsp;</p>
+      <div class="hero-actions">
+        <button class="btn-play" id="btnPlay">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Play
+        </button>
+        <button class="btn-info" id="btnMoreInfo">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          More Info
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Trending Section ───────────────────────────── -->
+  <section class="trending">
+    <div class="section-header">
+      <h2 class="section-title">Trending</h2>
+      <span class="section-count" id="trendingCount">Loading...</span>
+    </div>
+    <div class="carousel-wrap">
+      <button class="carousel-btn prev" id="prevBtn" aria-label="Scroll left">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="carousel-track" id="carouselTrack">
+        <!-- Cards injected by JS -->
+      </div>
+      <button class="carousel-btn next" id="nextBtn" aria-label="Scroll right">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div class="carousel-dots" id="carouselDots"></div>
+  </section>
+
+  <!-- ── Footer ────────────────────────────────────── -->
+  <footer>
+    <span class="footer-logo">FL<span>I</span>NT</span>
+    <ul class="footer-links">
+      <li><a href="#">Help</a></li>
+      <li><a href="#">Contact</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Source</a></li>
+    </ul>
+    <span class="footer-copy">Data provided by TMDB</span>
+  </footer>
+
+  <script>
+    // ─────────────────────────────────────────────────────────
+    // CONFIG — replace with your TMDB API key
+    // ─────────────────────────────────────────────────────────
+    const TMDB_KEY    = 'YOUR_TMDB_API_KEY_HERE';
+    const TMDB_BASE   = 'https://api.themoviedb.org/3';
+    const IMG_BASE    = 'https://image.tmdb.org/t/p';
+    const DEMO_MODE   = TMDB_KEY === 'YOUR_TMDB_API_KEY_HERE';
+
+    // ─────────────────────────────────────────────────────────
+    // DEMO DATA (shown when no API key is set)
+    // ─────────────────────────────────────────────────────────
+    const demoMovies = [
+      { id:1, title:"The Wild Kingdom", overview:"In a remote wilderness, a team of researchers uncovers a hidden ecosystem teeming with creatures never seen before.", vote_average:8.2, release_date:"2024-03-15", poster_path:null, backdrop_path:null, genre_ids:[28,12] },
+      { id:2, title:"Neon Requiem",     overview:"A jazz musician in a futuristic city gets tangled in a conspiracy that blurs the line between dreams and reality.", vote_average:7.6, release_date:"2024-06-01", poster_path:null, backdrop_path:null, genre_ids:[53,18] },
+      { id:3, title:"Shattered Tides",  overview:"Two estranged siblings reunite on a sailing voyage and confront long-buried family secrets threatening to tear them apart.", vote_average:7.9, release_date:"2024-09-20", poster_path:null, backdrop_path:null, genre_ids:[18] },
+      { id:4, title:"Epoch",            overview:"Humanity's last archive satellite is hijacked. One technician has 48 hours to recover it before all recorded history is lost.", vote_average:8.4, release_date:"2025-01-10", poster_path:null, backdrop_path:null, genre_ids:[878,53] },
+      { id:5, title:"The Glass Bridge", overview:"A cold-case detective follows a trail of cryptic clues across three continents, each one more dangerous than the last.", vote_average:7.3, release_date:"2025-02-14", poster_path:null, backdrop_path:null, genre_ids:[80,9648] },
+      { id:6, title:"Bloom",            overview:"A young botanist's discovery of a prehistoric plant specimen triggers a chain of events that could rewrite evolutionary history.", vote_average:8.0, release_date:"2025-03-01", poster_path:null, backdrop_path:null, genre_ids:[14,35] },
+      { id:7, title:"Iron & Ash",       overview:"Set in a post-industrial frontier, a lone wanderer seeks justice in a land ruled by corrupt rail barons and hired guns.", vote_average:7.7, release_date:"2024-11-05", poster_path:null, backdrop_path:null, genre_ids:[37,28] },
+      { id:8, title:"After the Static", overview:"A radio operator in an isolated mountain station begins picking up transmissions from a station that shut down thirty years ago.", vote_average:8.1, release_date:"2024-08-22", poster_path:null, backdrop_path:null, genre_ids:[27,9648] },
+    ];
+
+    // ─────────────────────────────────────────────────────────
+    // FETCH helpers
+    // ─────────────────────────────────────────────────────────
+    async function tmdb(endpoint) {
+      const url = `${TMDB_BASE}${endpoint}?api_key=${TMDB_KEY}&language=en-US`;
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`TMDB ${r.status}`);
+      return r.json();
+    }
+
+    function posterUrl(path, size = 'w342') {
+      return path ? `${IMG_BASE}/${size}${path}` : null;
+    }
+
+    function backdropUrl(path) {
+      return path ? `${IMG_BASE}/original${path}` : null;
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // HERO
+    // ─────────────────────────────────────────────────────────
+    function renderHero(movie) {
+      const heroBg   = document.getElementById('heroBg');
+      const backdrop = backdropUrl(movie.backdrop_path);
+
+      if (backdrop) {
+        const img = new Image();
+        img.onload = () => {
+          heroBg.style.backgroundImage = `url('${backdrop}')`;
+          heroBg.classList.remove('loading');
+        };
+        img.src = backdrop;
+      } else {
+        heroBg.style.background = 'linear-gradient(135deg, #1a1008 0%, #0d0d0d 60%, #0a0a12 100%)';
+        heroBg.classList.remove('loading');
+      }
+
+      document.getElementById('heroTitle').textContent    = movie.title;
+      document.getElementById('heroOverview').textContent = movie.overview;
+
+      const year   = movie.release_date ? movie.release_date.split('-')[0] : '—';
+      const rating = movie.vote_average ? movie.vote_average.toFixed(1) : '—';
+      document.getElementById('heroMeta').innerHTML =
+        `Trending in Movies <span>·</span> ${year} <span>·</span> ★ ${rating}`;
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // CARD BUILDER
+    // ─────────────────────────────────────────────────────────
+    function buildCard(movie) {
+      const poster  = posterUrl(movie.poster_path);
+      const year    = movie.release_date ? movie.release_date.split('-')[0] : '—';
+      const rating  = movie.vote_average ? movie.vote_average.toFixed(1) : '—';
+      const bgStyle = poster ? '' : `background:linear-gradient(135deg,#1a1008,#111);`;
+
+      const card = document.createElement('div');
+      card.className = 'movie-card';
+      card.innerHTML = `
+        <div class="card-poster ${poster ? '' : 'skeleton'}" style="${bgStyle}">
+          ${poster ? `<img src="${poster}" alt="${movie.title}" loading="lazy" />` : ''}
+          <div class="card-rating">★ ${rating}</div>
+          <div class="card-overlay">
+            <div class="card-overlay-title">${movie.title}</div>
+            <div class="card-overlay-meta">${year}</div>
+          </div>
+        </div>
+        <div class="card-info">
+          <div class="card-title">${movie.title}</div>
+          <div class="card-year">${year}</div>
+        </div>
+      `;
+
+      // Remove skeleton once image loads
+      if (poster) {
+        const img = card.querySelector('img');
+        img.addEventListener('load', () => card.querySelector('.card-poster').classList.remove('skeleton'));
+        img.addEventListener('error', () => { img.style.display = 'none'; });
+      }
+
+      return card;
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // CAROUSEL DOTS
+    // ─────────────────────────────────────────────────────────
+    function buildDots(count, track) {
+      const container = document.getElementById('carouselDots');
+      container.innerHTML = '';
+      const dots = [];
+
+      for (let i = 0; i < count; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'dot' + (i === 0 ? ' active' : '');
+        btn.setAttribute('aria-label', `Go to movie ${i + 1}`);
+        btn.addEventListener('click', () => scrollToCard(i, track, dots));
+        container.appendChild(btn);
+        dots.push(btn);
+      }
+
+      track.addEventListener('scroll', () => {
+        const cardW = track.firstElementChild?.offsetWidth || 200;
+        const idx   = Math.round(track.scrollLeft / (cardW + 16));
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      }, { passive: true });
+
+      return dots;
+    }
+
+    function scrollToCard(idx, track, dots) {
+      const cardW = track.firstElementChild?.offsetWidth || 200;
+      track.scrollTo({ left: idx * (cardW + 16), behavior: 'smooth' });
+      dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // MAIN INIT
+    // ─────────────────────────────────────────────────────────
+    async function init() {
+      const track = document.getElementById('carouselTrack');
+      const countEl = document.getElementById('trendingCount');
+
+      // Render skeleton cards while loading
+      for (let i = 0; i < 6; i++) {
+        const skeletonCard = document.createElement('div');
+        skeletonCard.className = 'movie-card';
+        skeletonCard.innerHTML = `<div class="card-poster skeleton"></div>
+          <div class="card-info"><div class="card-title" style="background:#1e1e1e;height:12px;border-radius:2px;width:70%;">&nbsp;</div></div>`;
+        track.appendChild(skeletonCard);
+      }
+
+      let movies = [];
+
+      try {
+        if (DEMO_MODE) throw new Error('demo');
+        const data = await tmdb('/trending/movie/week');
+        movies = data.results || [];
+      } catch {
+        movies = demoMovies;
+        countEl.textContent = 'Demo mode — add your TMDB API key';
+      }
+
+      // Clear skeletons
+      track.innerHTML = '';
+
+      // Render hero with first movie
+      if (movies.length > 0) renderHero(movies[0]);
+
+      // Render cards
+      movies.forEach(m => track.appendChild(buildCard(m)));
+
+      countEl.textContent = DEMO_MODE ? 'Demo mode — add your TMDB API key' : `${movies.length} this week`;
+
+      // Dots
+      const dots = buildDots(movies.length, track);
+
+      // Chevrons
+      const cardW = () => (track.firstElementChild?.offsetWidth || 200) + 16;
+      document.getElementById('prevBtn').addEventListener('click', () => {
+        track.scrollBy({ left: -cardW() * 3, behavior: 'smooth' });
+      });
+      document.getElementById('nextBtn').addEventListener('click', () => {
+        track.scrollBy({ left: cardW() * 3, behavior: 'smooth' });
+      });
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // TOPBAR SCROLL EFFECT
+    // ─────────────────────────────────────────────────────────
+    window.addEventListener('scroll', () => {
+      document.getElementById('topbar').classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    // ─────────────────────────────────────────────────────────
+    // SIDEBAR TOGGLE
+    // ─────────────────────────────────────────────────────────
+    const sidebar   = document.getElementById('sidebar');
+    const overlay   = document.getElementById('overlay');
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('btnHamburger').addEventListener('click', openSidebar);
+    document.getElementById('btnClose').addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', () => { closeSidebar(); closeSearch(); });
+
+    // ─────────────────────────────────────────────────────────
+    // SEARCH TOGGLE
+    // ─────────────────────────────────────────────────────────
+    const searchBar = document.getElementById('searchBar');
+
+    function openSearch() {
+      searchBar.classList.add('open');
+      setTimeout(() => document.getElementById('searchInput').focus(), 300);
+    }
+
+    function closeSearch() {
+      searchBar.classList.remove('open');
+    }
+
+    document.getElementById('btnSearch').addEventListener('click', openSearch);
+    document.getElementById('btnSearchClose').addEventListener('click', closeSearch);
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closeSidebar(); closeSearch(); }
+    });
+
+    // ─────────────────────────────────────────────────────────
+    // RUN
+    // ─────────────────────────────────────────────────────────
+    init();
+  </script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 import './bootstrap';
+import './flint';
 
 import Alpine from 'alpinejs';
 
