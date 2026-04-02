@@ -12,7 +12,11 @@
       </svg>
     </button>
     @auth
-      <a href="{{ route('profile.edit') }}" class="btn-login">{{ Auth::user()->name }}</a>
+      <a href="{{ route('profile.edit') }}" class="btn-username">{{ Auth::user()->name }}</a>
+      <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit" class="btn-signout">Sign Out</button>
+      </form>
     @else
       <a href="{{ route('login') }}" class="btn-login">Sign In</a>
     @endauth
