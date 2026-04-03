@@ -1,0 +1,129 @@
+@use 'variables' as *;
+
+// ─── Auth Page ────────────────────────────────────────────
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: $bg;
+}
+
+.auth-logo {
+  font-family: $font-head;
+  font-size: 2.2rem;
+  letter-spacing: 0.1em;
+  color: $text;
+  text-decoration: none;
+  margin-bottom: 2rem;
+
+  span { color: $spark; }
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: $card;
+  border: 1px solid $border;
+  padding: 2.5rem;
+}
+
+.auth-title {
+  font-family: $font-head;
+  font-size: 2rem;
+  letter-spacing: 0.08em;
+  color: $text;
+  margin-bottom: 0.25rem;
+}
+
+.auth-subtitle {
+  font-size: 0.82rem;
+  color: $muted;
+  margin-bottom: 2rem;
+  letter-spacing: 0.03em;
+}
+
+.auth-status {
+  font-size: 0.82rem;
+  color: #6fcf97;
+  margin-bottom: 1rem;
+}
+
+.auth-field { margin-bottom: 1.25rem; }
+
+.auth-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $muted;
+  margin-bottom: 0.5rem;
+}
+
+.auth-input {
+  width: 100%;
+  background: $surface;
+  border: 1px solid $border;
+  color: $text;
+  font-family: $font-body;
+  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: border-color $t-fast;
+
+  &:focus { border-color: $spark; }
+  &::placeholder { color: $muted; }
+}
+
+.auth-error {
+  font-size: 0.78rem;
+  color: #e05252;
+  margin-top: 0.35rem;
+}
+
+.auth-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.auth-remember {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: $muted;
+  cursor: pointer;
+
+  input[type="checkbox"] { accent-color: $spark; }
+}
+
+.auth-forgot {
+  font-size: 0.78rem;
+  color: $muted;
+  text-decoration: none;
+  transition: color $t-fast;
+
+  &:hover { color: $spark; }
+}
+
+.auth-submit {
+  width: 100%;
+  background: $spark;
+  color: $bg;
+  font-family: $font-body;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: none;
+  padding: 0.875rem;
+  cursor: pointer;
+  transition: background $t-fast;
+
+  &:hover { background: $spark-dim; }
+}

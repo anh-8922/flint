@@ -1,0 +1,34 @@
+@use 'variables' as *;
+
+// ─── Reset ────────────────────────────────────────────────
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+// ─── CSS Custom Properties (consumed by JS too) ───────────
+:root {
+  --bg:        #{$bg};
+  --surface:   #{$surface};
+  --card:      #{$card};
+  --border:    #{$border};
+  --spark:     #{$spark};
+  --spark-dim: #{$spark-dim};
+  --text:      #{$text};
+  --muted:     #{$muted};
+  --nav-w:     #{$nav-w};
+  --font-head: #{$font-head};
+  --font-body: #{$font-body};
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: $bg;
+  color: $text;
+  font-family: $font-body;
+  font-weight: 400;
+  min-height: 100vh;
+  overflow-x: hidden;
+}

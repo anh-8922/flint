@@ -1,0 +1,202 @@
+@use 'variables' as *;
+
+// ─── Section Header ───────────────────────────────────────
+.movie-row {
+  padding: 2.5rem 0 3rem;
+  position: relative;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $pad-x;
+  margin-bottom: 1.25rem;
+}
+
+.section-title {
+  font-family: $font-head;
+  font-size: 1.4rem;
+  letter-spacing: 0.12em;
+  color: $text;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  &::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 2px;
+    background: $spark;
+  }
+}
+
+.section-count {
+  font-size: 0.75rem;
+  color: $muted;
+  letter-spacing: 0.06em;
+}
+
+// ─── Carousel ─────────────────────────────────────────────
+.carousel-wrap { position: relative; }
+
+.carousel-track {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding: 0.5rem $pad-x 1.25rem;
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-60%);
+  z-index: 10;
+  width: 44px;
+  height: 80px;
+  background: rgba(8, 8, 8, 0.85);
+  border: 1px solid $border;
+  color: $text;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: background $t-fast, color $t-fast, border-color $t-fast;
+
+  &:hover { background: $spark; color: $bg; border-color: $spark; }
+  &.prev  { left: 0; }
+  &.next  { right: 0; }
+}
+
+// ─── Movie Card ───────────────────────────────────────────
+.movie-card {
+  flex: 0 0 200px;
+  scroll-snap-align: start;
+  cursor: pointer;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    .card-poster { border-color: $spark; }
+
+    .card-poster img {
+      transform: scale(1.06);
+      filter: brightness(0.7);
+    }
+
+    .card-overlay { opacity: 1; }
+  }
+}
+
+.card-poster {
+  width: 100%;
+  aspect-ratio: 2/3;
+  background: $card;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid $border;
+  transition: border-color 0.25s;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease, filter 0.4s ease;
+    display: block;
+  }
+
+  &.skeleton {
+    animation: shimmer 1.5s infinite;
+    background: linear-gradient(110deg, #161616 30%, #1e1e1e 50%, #161616 70%);
+    background-size: 200% 100%;
+
+    img { display: none; }
+  }
+}
+
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(8, 8, 8, 0.95) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity $t-base;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1rem;
+}
+
+.card-overlay-title {
+  font-family: $font-head;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+}
+
+.card-overlay-meta {
+  font-size: 0.7rem;
+  color: $muted;
+  letter-spacing: 0.05em;
+}
+
+.card-rating {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: rgba(8, 8, 8, 0.85);
+  border: 1px solid $spark;
+  color: $spark;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.4rem;
+  letter-spacing: 0.05em;
+}
+
+.card-info { padding: 0.6rem 0 0; }
+
+.card-title {
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.02em;
+}
+
+.card-year {
+  font-size: 0.72rem;
+  color: $muted;
+  margin-top: 0.2rem;
+}
+
+// ─── Carousel Dots ────────────────────────────────────────
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  padding-top: 0.5rem;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $border;
+  cursor: pointer;
+  transition: background $t-fast, transform $t-fast;
+  border: none;
+
+  &.active {
+    background: $spark;
+    transform: scale(1.3);
+  }
+}

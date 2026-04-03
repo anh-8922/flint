@@ -1,0 +1,47 @@
+@use 'variables' as *;
+
+// ─── Footer ───────────────────────────────────────────────
+footer {
+  border-top: 1px solid $border;
+  padding: 1.5rem $pad-x;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-logo {
+  font-family: $font-head;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  color: $muted;
+
+  span { color: $spark; }
+}
+
+.footer-links {
+  display: flex;
+  gap: 0.25rem;
+  list-style: none;
+
+  li a {
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: $muted;
+    text-decoration: none;
+    transition: color $t-fast;
+    padding: 0 0.6rem;
+    border-right: 1px solid $border;
+
+    &:hover { color: $spark; }
+  }
+
+  li:last-child a { border-right: none; }
+}
+
+.footer-copy {
+  font-size: 0.7rem;
+  color: #3a3530;
+  letter-spacing: 0.05em;
+}

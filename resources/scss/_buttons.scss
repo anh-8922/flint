@@ -1,0 +1,149 @@
+@use 'variables' as *;
+
+// ─── Shared button base ───────────────────────────────────
+%btn-label {
+  font-family: $font-body;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: background $t-fast;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+// ─── Hamburger ────────────────────────────────────────────
+.btn-hamburger {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px;
+
+  span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: $text;
+    border-radius: 2px;
+    transition: background $t-fast;
+  }
+
+  &:hover span { background: $spark; }
+}
+
+// ─── Close ────────────────────────────────────────────────
+.btn-close {
+  width: 36px;
+  height: 36px;
+  border: 1px solid $border;
+  border-radius: 50%;
+  background: transparent;
+  color: $text;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: border-color $t-fast, color $t-fast;
+
+  &:hover { border-color: $spark; color: $spark; }
+}
+
+// ─── Search icon ──────────────────────────────────────────
+.btn-search {
+  background: transparent;
+  border: none;
+  color: $muted;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: color $t-fast;
+  padding: 4px;
+
+  &:hover { color: $spark; }
+}
+
+// ─── Sign In (topbar CTA) ─────────────────────────────────
+.btn-login {
+  @extend %btn-label;
+  font-size: 0.8rem;
+  color: $bg;
+  background: $spark;
+  padding: 0.5rem 1.25rem;
+
+  &:hover { background: $spark-dim; }
+}
+
+// ─── Topbar user state ────────────────────────────────────
+.btn-username {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: $text;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+  transition: opacity $t-fast;
+
+  &:hover { opacity: 1; }
+}
+
+.btn-signout {
+  font-family: $font-body;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $muted;
+  background: transparent;
+  border: 1px solid $border;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: color $t-fast, border-color $t-fast;
+
+  &:hover { color: $text; border-color: rgba(255, 255, 255, 0.25); }
+}
+
+// ─── Play & Info (hero actions) ───────────────────────────
+.btn-play {
+  @extend %btn-label;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  color: $bg;
+  background: $spark;
+  padding: 0.75rem 1.75rem;
+  transition: background $t-fast, transform 0.15s;
+
+  &:hover { background: $spark-hover; transform: translateY(-1px); }
+}
+
+.btn-info {
+  @extend %btn-label;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: $text;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid $border;
+  padding: 0.75rem 1.5rem;
+  transition: background $t-fast, border-color $t-fast;
+  backdrop-filter: blur(8px);
+
+  &:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.2); }
+}
+
+// ─── Logo wordmark ────────────────────────────────────────
+.logo {
+  font-family: $font-head;
+  font-size: 1.8rem;
+  letter-spacing: 0.1em;
+  color: $text;
+  text-decoration: none;
+
+  span { color: $spark; }
+}

@@ -1,0 +1,36 @@
+// ─── Colours ──────────────────────────────────────────────
+$bg:        #080808;
+$surface:   #111111;
+$card:      #161616;
+$border:    rgba(255, 255, 255, 0.07);
+$spark:     #E8A020;
+$spark-dim: #B8781A;
+$spark-hover: #f5b432;
+$text:      #F0EDE8;
+$muted:     #7A7570;
+
+// ─── Typography ───────────────────────────────────────────
+$font-head: 'Bebas Neue', sans-serif;
+$font-body: 'Outfit', sans-serif;
+
+// ─── Layout ───────────────────────────────────────────────
+$nav-w:       280px;
+$pad-x:       3rem;
+$pad-x-sm:    1.5rem;
+$topbar-h:    5rem;
+
+// ─── Z-index ──────────────────────────────────────────────
+$z-overlay:   150;
+$z-topbar:    100;
+$z-sidebar:   200;
+$z-search:    300;
+
+// ─── Transitions ──────────────────────────────────────────
+$t-fast:   0.2s;
+$t-base:   0.3s;
+$t-slide:  0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+// ─── Breakpoints ──────────────────────────────────────────
+$bp-sm:  480px;
+$bp-md:  768px;
+$bp-lg:  640px;

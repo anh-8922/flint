@@ -1,0 +1,27 @@
+@use 'variables' as *;
+
+// ─── Tablet & below ───────────────────────────────────────
+@media (max-width: $bp-md) {
+  .topbar           { padding: 1rem 1.25rem; }
+  .hero-content     { padding: 0 $pad-x-sm 3rem; }
+  .section-header   { padding: 0 $pad-x-sm; }
+  .carousel-track   { padding: 0.5rem $pad-x-sm 1.25rem; }
+  .carousel-btn     { display: none; }
+  .movie-card       { flex: 0 0 150px; }
+  .detail-hero-content { padding: 0 $pad-x-sm 3rem; gap: 1.5rem; }
+  .detail-player-wrap  { padding: 0 $pad-x-sm; }
+  .cast-track          { padding: 0.5rem $pad-x-sm 1rem; }
+  .breadcrumb          { padding: 4.5rem $pad-x-sm 0; }
+
+  footer {
+    padding: 1.25rem $pad-x-sm;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+// ─── Mobile ───────────────────────────────────────────────
+@media (max-width: $bp-sm) {
+  .movie-card { flex: 0 0 130px; }
+  .btn-login  { display: none; }
+}

@@ -248,11 +248,13 @@ document.getElementById('btnClose')?.addEventListener('click', closeSidebar);
 const searchBar   = document.getElementById('searchBar');
 const searchInput = document.getElementById('searchInput');
 
-// Lazy-created results dropdown
 let searchResultsEl = null;
 function getResultsEl() {
   if (!searchResultsEl) {
-    searchResultsEl = Object.assign(document.createElement('div'), { className: 'search-results' });
+    searchResultsEl = Object.assign(document.createElement('div'), {
+      className: 'search-results',
+      role: 'listbox',
+    });
     searchBar?.appendChild(searchResultsEl);
   }
   return searchResultsEl;
@@ -260,12 +262,15 @@ function getResultsEl() {
 
 function openSearch() {
   searchBar?.classList.add('open');
+  searchBar?.setAttribute('aria-expanded', 'true');
   requestAnimationFrame(() => searchInput?.focus());
 }
 
 function closeSearch() {
   searchBar?.classList.remove('open');
+  searchBar?.setAttribute('aria-expanded', 'false');
   if (searchResultsEl) searchResultsEl.replaceChildren();
+  if (searchInput) searchInput.value = '';
 }
 
 function debounce(fn, ms) {
@@ -273,56 +278,120 @@ function debounce(fn, ms) {
   return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
 }
 
+function showSkeletons(resultsEl, count = 4) {
+  resultsEl.replaceChildren();
+  for (let i = 0; i < count; i++) {
+    const skPoster = Object.assign(document.createElement('div'), { className: 'sk-poster skeleton' });
+    const skTitle  = Object.assign(document.createElement('div'), { className: 'sk-title skeleton' });
+    const skYear   = Object.assign(document.createElement('div'), { className: 'sk-year skeleton' });
+    const skLines  = document.createElement('div');
+    skLines.className = 'sk-lines';
+    skLines.append(skTitle, skYear);
+    const row = document.createElement('div');
+    row.className = 'search-skeleton';
+    row.append(skPoster, skLines);
+    resultsEl.appendChild(row);
+  }
+}
+
+function buildResultItem(m) {
+  const item = document.createElement('a');
+  item.className = 'search-result-item';
+  item.href = `/movie/${m.id}`;
+  item.setAttribute('role', 'option');
+
+  const poster = posterUrl(m.poster_path, 'w92');
+  if (poster) {
+    const img = Object.assign(document.createElement('img'), { src: poster, alt: m.title });
+    item.appendChild(img);
+  } else {
+    const ph = Object.assign(document.createElement('div'), { className: 'no-poster', textContent: '🎬' });
+    item.appendChild(ph);
+  }
+
+  const title  = Object.assign(document.createElement('span'), { className: 'search-result-title', textContent: m.title });
+  const year   = Object.assign(document.createElement('span'), { className: 'search-result-year',  textContent: m.release_date?.split('-')[0] ?? '' });
+  const rating = m.vote_average
+    ? Object.assign(document.createElement('span'), { className: 'search-result-rating', textContent: `★ ${m.vote_average.toFixed(1)}` })
+    : null;
+
+  const meta = document.createElement('div');
+  meta.className = 'search-result-meta';
+  meta.append(year);
+  if (rating) meta.append(rating);
+
+  const text = document.createElement('div');
+  text.className = 'search-result-text';
+  text.append(title, meta);
+
+  item.appendChild(text);
+  return item;
+}
+
 async function doSearch(query) {
   const resultsEl = getResultsEl();
-  resultsEl.replaceChildren();
-  if (!query.trim()) return;
+  const q = query.trim();
 
-  resultsEl.append(Object.assign(document.createElement('p'), { className: 'search-loading', textContent: 'Searching…' }));
+  if (q.length < 2) { resultsEl.replaceChildren(); return; }
+
+  showSkeletons(resultsEl);
 
   try {
     let movies;
     try {
-      const data = await api('/tmdb/search', { query });
+      const data = await api('/tmdb/search', { query: q });
       movies = data.results?.slice(0, 8) || [];
     } catch {
-      const q = query.toLowerCase();
-      movies = demoMovies.filter(m => m.title.toLowerCase().includes(q));
+      const ql = q.toLowerCase();
+      movies = demoMovies.filter(m => m.title.toLowerCase().includes(ql));
     }
 
     resultsEl.replaceChildren();
 
     if (!movies.length) {
-      const empty = document.createElement('p');
-      empty.className = 'search-empty';
-      empty.textContent = `No results for "${query}"`;
-      resultsEl.appendChild(empty);
+      resultsEl.appendChild(Object.assign(document.createElement('p'), {
+        className: 'search-empty',
+        textContent: `No results for "${q}"`,
+      }));
       return;
     }
 
-    movies.forEach(m => {
-      const item = document.createElement('a');
-      item.className = 'search-result-item';
-      item.href = `/movie/${m.id}`;
-
-      const poster = posterUrl(m.poster_path, 'w92');
-      if (poster) {
-        item.appendChild(Object.assign(document.createElement('img'), { src: poster, alt: m.title, width: 40 }));
-      }
-
-      const title = Object.assign(document.createElement('span'), { className: 'search-result-title', textContent: m.title });
-      const year  = Object.assign(document.createElement('span'), { className: 'search-result-year',  textContent: m.release_date?.split('-')[0] ?? '' });
-
-      const text = document.createElement('div');
-      text.className = 'search-result-text';
-      text.append(title, year);
-      item.appendChild(text);
-      resultsEl.appendChild(item);
-    });
+    movies.forEach(m => resultsEl.appendChild(buildResultItem(m)));
   } catch {
-    resultsEl.replaceChildren(Object.assign(document.createElement('p'), { className: 'search-empty', textContent: 'Search failed. Please try again.' }));
+    resultsEl.replaceChildren(Object.assign(document.createElement('p'), {
+      className: 'search-empty',
+      textContent: 'Search unavailable. Please try again.',
+    }));
   }
 }
+
+// ─── Keyboard navigation within results ──────────────────
+searchInput?.addEventListener('keydown', e => {
+  const resultsEl = searchResultsEl;
+  if (!resultsEl) return;
+  const items = [...resultsEl.querySelectorAll('.search-result-item')];
+  if (!items.length) return;
+
+  const focused = resultsEl.querySelector('.focused');
+  let idx = items.indexOf(focused);
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    focused?.classList.remove('focused');
+    idx = (idx + 1) % items.length;
+    items[idx].classList.add('focused');
+    items[idx].scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    focused?.classList.remove('focused');
+    idx = (idx - 1 + items.length) % items.length;
+    items[idx].classList.add('focused');
+    items[idx].scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'Enter' && focused) {
+    e.preventDefault();
+    window.location.href = focused.href;
+  }
+});
 
 searchInput?.addEventListener('input', debounce(e => doSearch(e.target.value), 350));
 

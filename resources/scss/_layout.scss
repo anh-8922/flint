@@ -1,0 +1,114 @@
+@use 'variables' as *;
+
+// ─── Overlay ──────────────────────────────────────────────
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  z-index: $z-overlay;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity $t-base;
+
+  &.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+}
+
+// ─── Sidebar ──────────────────────────────────────────────
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: $nav-w;
+  height: 100vh;
+  background: #0d0d0d;
+  border-right: 1px solid $border;
+  z-index: $z-sidebar;
+  transform: translateX(calc(-1 * #{$nav-w}));
+  transition: transform $t-slide;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+
+  &.open { transform: translateX(0); }
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+}
+
+.sidebar-logo {
+  font-family: $font-head;
+  font-size: 2rem;
+  letter-spacing: 0.05em;
+  color: $spark;
+}
+
+.sidebar-nav {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  li a {
+    display: block;
+    font-family: $font-head;
+    font-size: 1.6rem;
+    letter-spacing: 0.08em;
+    color: $muted;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    transition: color $t-fast, padding-left $t-fast;
+    border-bottom: 1px solid $border;
+
+    &:hover { color: $text; padding-left: 0.5rem; }
+    &.active { color: $spark; }
+  }
+
+  li:last-child a { border-bottom: none; }
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  font-size: 0.75rem;
+  color: $muted;
+  letter-spacing: 0.05em;
+}
+
+// ─── Topbar ───────────────────────────────────────────────
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: $z-topbar;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2rem;
+  background: linear-gradient(to bottom, rgba(8, 8, 8, 0.95) 0%, transparent 100%);
+  transition: background $t-base;
+
+  &.scrolled {
+    background: rgba(8, 8, 8, 0.98);
+    border-bottom: 1px solid $border;
+  }
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}

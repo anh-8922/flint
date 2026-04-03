@@ -1,0 +1,18 @@
+// All @use must precede any CSS rules (including @tailwind)
+@use 'variables' as *;
+@use 'base';
+@use 'animations';
+@use 'layout';
+@use 'buttons';
+@use 'hero';
+@use 'cards';
+@use 'search';
+@use 'footer';
+@use 'detail';
+@use 'auth';
+@use 'responsive';
+
+// Tailwind (PostCSS processes these after Sass compiles)
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
